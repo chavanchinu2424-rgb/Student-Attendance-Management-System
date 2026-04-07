@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Attendance - Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* GLOBAL STYLES - UNCHANGED */
+        body {
+            background-color: #f0f2f5; 
+            background-image: radial-gradient(circle at top right, #e2e8f0 0%, #f0f2f5 100%);
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; 
+            margin: 0;
+        }
+
+        .portal-container {
+            display: flex;
+            width: 1000px; 
+            height: 600px;
+            background-color: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden; 
+        }
+
+        .branding-panel {
+            flex: 1; 
+            background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
+            color: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .branding-panel::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 0, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .brand-name {
+            font-size: 42px; 
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-name span { color: #FF6B00; }
+
+        .brand-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-top: 15px;
+            margin-bottom: 40px;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-description {
+            font-size: 16px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-panel {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .form-subheader {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #FF6B00;
+            background-color: #ffffff;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3);
+            width: 100%; /* Ensures button takes full width of the container */
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 107, 0, 0.4);
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: center;
+            color: #64748b;
+            font-size: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 24px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover { color: #FF6B00; }
+
+        @media (max-width: 1024px) {
+            .portal-container {
+                width: 90%; 
+                height: auto;
+                flex-direction: column; 
+                max-width: 500px; 
+                margin: 40px 0; 
+            }
+            .branding-panel { padding: 40px 30px; text-align: center; }
+            .form-panel { padding: 40px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portal-container">
+        <div class="branding-panel">
+            <h1 class="brand-name">Biometric<br><span>Attendance</span></h1>
+            <p class="brand-subtitle">Smart Campus Portal</p>
+            <p class="brand-description">
+                Welcome to the next generation of campus security and attendance management. 
+                Secure, seamless, and powered by advanced facial recognition technology.
+            </p>
+        </div>
+
+        <div class="form-panel">
+            <h2 class="form-header">Welcome Back</h2>
+            <p class="form-subheader">Please enter your student credentials to continue.</p>
+            
+            <!-- Standard form handling for better browser support -->
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">University Email</label>
+                    <input type="email" id="email" placeholder="student@university.edu" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">Access Dashboard</button>
+            </form>
+
+            <a href="#" class="forgot-password">Forgot your password?</a>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * SENIOR DEV NOTE: 
+         * Using the 'submit' event on the form is best practice. 
+         * It automatically handles the "Access Dashboard" button click 
+         * AND the "Enter" key on the physical keyboard.
+         */
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevents the page from refreshing on submit
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if(email === "" || password === "") {
+                alert("Please enter both your email and password!");
+            } else {
+                // Professional redirection
+                console.log("Authentication successful, redirecting...");
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
+</body>
+</html>
