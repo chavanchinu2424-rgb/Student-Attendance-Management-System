@@ -14,11 +14,13 @@
         .form-side { flex: 1.2; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
-        label { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 15px; background-color: #f8fafc; transition: 0.3s; }
+        label { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; display: block; } /* Added display block */
+        input, select { width: 90%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 15px; background-color: #f8fafc; transition: 0.3s; box-sizing: border-box;} /* Added box-sizing */
+        input[type="file"] { padding: 10px; background-color: #ffffff; cursor: pointer; } /* Added specific file input style */
         input:focus, select:focus { border-color: #FF8A00; outline: none; }
         .register-btn { background: #000000; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; width: 100%; }
         .register-btn:hover { background: #FF8A00; }
+        .register-btn:disabled { background: #64748b; cursor: not-allowed; } /* Style for when uploading */
         #error-msg { background: #fff1f2; color: #be123c; padding: 12px; border-radius: 10px; font-size: 13px; text-align: center; display: none; margin-bottom: 20px; }
     </style>
 </head>
@@ -37,6 +39,13 @@
                         <option value="AR VR">AR VR</option>
                     </select>
                 </div>
+                
+                <!-- NEW: Profile Photo Upload Input -->
+                <div class="input-group full-width">
+                    <label>Profile Photo (For Facial Recognition)</label>
+                    <input type="file" id="profilePhoto" accept="image/*">
+                </div>
+
                 <div class="input-group full-width"><label>University Email</label><input type="email" id="email" placeholder="student@university.edu"></div>
                 <div class="input-group"><label>Password</label><input type="password" id="password" placeholder="••••••••"></div>
                 <div class="input-group"><label>Confirm</label><input type="password" id="confirmPassword" placeholder="••••••••"></div>
@@ -45,27 +54,64 @@
             <p style="text-align: center; margin-top: 20px;">Already registered? <a href="index.html" style="color: #FF8A00; font-weight: 700; text-decoration: none;">Login</a></p>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        // NEW: Import Firebase Storage modules
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
         const firebaseConfig = { apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc", authDomain: "student-attendance-syste-36412.firebaseapp.com", projectId: "student-attendance-syste-36412", storageBucket: "student-attendance-syste-36412.firebasestorage.app", messagingSenderId: "183007048528", appId: "1:183007048528:web:5bcade6da140f369013255", measurementId: "G-RXGBW49ZB3" };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app); // NEW: Initialize Storage
+
         document.getElementById('registerBtn').addEventListener('click', async () => {
             const name = document.getElementById('fullName').value;
             const branch = document.getElementById('branch').value;
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             const conf = document.getElementById('confirmPassword').value;
+            const photoFile = document.getElementById('profilePhoto').files[0]; // NEW: Get the selected file
+
             if(pass !== conf) { alert("Passwords do not match"); return; }
+            if(!photoFile) { alert("Please upload a profile photo!"); return; } // NEW: Ensure they uploaded a photo
+
+            const btn = document.getElementById('registerBtn');
+            btn.innerText = "UPLOADING & REGISTERING..."; // Change button text so user knows it's working
+            btn.disabled = true; // Disable button to prevent double clicks
+
             try {
+                // 1. Create the User Auth Account
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
-                await setDoc(doc(db, "students", cred.user.uid), { name, branch, email, registeredAt: new Date() });
+                const uid = cred.user.uid;
+
+                // 2. Upload Photo to Firebase Storage
+                // We save it in a folder called 'student_photos' and name it with the user's UID
+                const storageRef = ref(storage, `student_photos/${uid}.jpg`); 
+                await uploadBytes(storageRef, photoFile);
+                
+                // 3. Get the public URL of the photo we just uploaded
+                const photoURL = await getDownloadURL(storageRef);
+
+                // 4. Save User Info AND the Photo URL to Firestore Database
+                await setDoc(doc(db, "students", uid), { 
+                    name: name, 
+                    branch: branch, 
+                    email: email, 
+                    photoURL: photoURL, // NEW: Save the image link!
+                    registeredAt: new Date() 
+                });
+
                 window.location.href = "Dashboard.html";
-            } catch (err) { alert(err.message); }
+            } catch (err) { 
+                alert(err.message); 
+                btn.innerText = "FINISH REGISTRATION"; // Reset button if there is an error
+                btn.disabled = false;
+            }
         });
     </script>
 </body>
-</html>

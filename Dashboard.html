@@ -3,137 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Biometric Attendance</title>
+    <title>Student Portal | ADYPU Biometric</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <style>
-        body { background-color: #f8fafc; font-family: 'Outfit', sans-serif; margin: 0; padding: 0; color: #0f172a; }
-        
-        /* Navbar Styling */
-        .navbar { 
-            background-color: #0f172a; 
-            color: white; 
-            padding: 15px 40px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-        }
-        .brand { font-size: 22px; font-weight: 800; }
-        .brand span { color: #FF6B00; }
-        
-        .nav-actions { display: flex; align-items: center; gap: 25px; }
-        .user-profile { display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .avatar { 
-            width: 36px; height: 36px; 
-            background-color: #FF6B00; 
-            border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; 
-            font-weight: bold; color: white; 
-        }
+        :root { --primary-orange: #FF6B00; --sidebar-dark: #0f172a; --bg-light: #f8fafc; --white: #ffffff; }
+        body { background-color: var(--bg-light); font-family: 'Outfit', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        .logout-btn { 
-            background: transparent; color: #94a3b8; border: 1px solid #334155; 
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; 
-            font-family: inherit; font-weight: 600; transition: all 0.3s; 
-        }
-        .logout-btn:hover { background-color: #ef4444; color: white; border-color: #ef4444; }
+        /* SIDEBAR */
+        .sidebar { width: 260px; background-color: var(--sidebar-dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+        .logo-section { padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .brand-text { font-size: 20px; font-weight: 800; color: white; margin: 0; text-transform: uppercase; }
+        .brand-text span { color: var(--primary-orange); }
+        .menu-list { padding: 20px 0; flex-grow: 1; }
+        .menu-item { padding: 15px 25px; display: flex; align-items: center; cursor: pointer; transition: 0.3s; color: #94a3b8; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .menu-item.active { background: rgba(255, 107, 0, 0.1); color: var(--primary-orange); border-left: 4px solid var(--primary-orange); }
 
-        /* Main Container */
-        .container { 
-            max-width: 1200px; margin: 40px auto; padding: 0 20px; 
-            display: grid; grid-template-columns: 1fr 2fr; gap: 30px; 
-        }
+        /* MAIN WRAPPER */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top-navbar { background: var(--primary-orange); color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; }
+        .avatar { width: 35px; height: 35px; background: white; border-radius: 50%; color: var(--primary-orange); display: flex; justify-content: center; align-items: center; font-weight: 800; }
+        .logout-btn { background: white; color: var(--primary-orange); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+
+        /* TABS CONTENT */
+        .content-body { padding: 30px; display: none; }
+        .content-body.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PARAMETERS GRID */
+        .param-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .param-card { background: white; padding: 25px; border-radius: 12px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-left: 6px solid var(--primary-orange); position: relative; }
+        .param-icon { width: 50px; height: 50px; background: #fff7ed; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary-orange); font-size: 20px; }
+        .card-label { font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; margin: 0; }
+        .card-value { font-size: 18px; font-weight: 800; color: #1e293b; margin: 5px 0 0; }
         
-        .card { 
-            background-color: white; border-radius: 24px; padding: 35px; 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9; 
-        }
-        
-        .card-title { 
-            font-size: 18px; font-weight: 800; color: #0f172a; 
-            margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; 
-        }
-        
-        .branch-text { color: #64748b; font-size: 14px; margin-bottom: 25px; }
+        /* ATTENDANCE WARNING */
+        .warning-text { color: #be123c; font-weight: 800; font-size: 10px; margin-top: 5px; display: none; text-transform: uppercase; }
 
-        /* Stats Card */
-        .stats-card { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .circular-chart { display: block; margin: 0 auto; max-width: 180px; max-height: 180px; }
-        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3; }
-        .circle { fill: none; stroke-width: 3; stroke-linecap: round; stroke: #FF6B00; stroke-dasharray: 85, 100; }
-        .percentage { fill: #0f172a; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; text-anchor: middle; }
+        /* MARKING CONSOLE */
+        .schedule-box { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        .lecture-row { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #f1f5f9; }
+        .lecture-row:last-child { border: none; }
+        .lect-name { font-weight: 700; color: #1e293b; font-size: 16px; }
+        .lect-time { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+        .status-btn { padding: 10px 24px; border-radius: 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; border: none; transition: 0.3s; }
+        .status-btn.pending { background: #fef08a; color: #854d0e; }
+        .status-btn.present { background: #dcfce7; color: #166534; cursor: default; }
 
-        /* Scanner Card */
-        .camera-card { 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; text-align: center; 
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); 
-            border: 2px dashed #cbd5e1; position: relative; overflow: hidden; 
-        }
-        .scan-btn { 
-            background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%); 
-            color: white; border: none; padding: 16px 40px; border-radius: 12px; 
-            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; 
-            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); margin-top: 25px; z-index: 2; 
-        }
+        /* TIMETABLE TABLE */
+        .timetable-container { overflow-x: auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; min-width: 950px; }
+        th, td { border: 1px solid #e2e8f0; padding: 15px; text-align: center; font-size: 12px; color: #1e293b; vertical-align: middle; }
+        th { background: var(--primary-orange); color: white; font-weight: 800; text-transform: uppercase; }
+        .day-col { background: #f8fafc; font-weight: 800; color: #0f172a; font-size: 13px; }
+        .break-row { background: #dcfce7; font-weight: 800; color: #166534; text-transform: uppercase; }
 
-        /* Schedule Card */
-        .schedule-section { grid-column: 1 / -1; }
-        .schedule-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px; border-radius: 16px; margin-bottom: 10px; 
-            background-color: #f8fafc; transition: transform 0.2s ease; 
-        }
-        .status { padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; text-transform: uppercase; cursor: default; }
-        .status.present { background-color: #dcfce7; color: #166534; cursor: default; }
-        .status.pending { background-color: #fef08a; color: #854d0e; cursor: pointer; transition: 0.3s; }
-        .status.pending:hover { background-color: #fde047; }
+        /* STUDENT PROFILE TAB */
+        .info-list-card { background: white; padding: 40px; border-radius: 12px; max-width: 850px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .info-item { display: grid; grid-template-columns: 250px 1fr; border-bottom: 1px dashed #eee; padding: 15px 0; }
+        .info-key { font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 13px; }
+        .info-val { color: #1e293b; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="brand">Biometric<span>Attendance</span></div>
-        <div class="nav-actions">
-            <div class="user-profile">
-                <span id="userNameText">Loading...</span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo-section"><h2 class="brand-text">ADYPU<span> PORTAL</span></h2></div>
+        <div class="menu-list">
+            <div class="menu-item active" onclick="showTab('tab-dash', this)">Dashboard</div>
+            <div class="menu-item" onclick="showTab('tab-student', this)">Student Related</div>
+            <div class="menu-item" onclick="showTab('tab-timetable', this)">Manage Time Table</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="top-navbar">
+            <div>Active Academic Year : 2025-26 Even Term</div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span id="userNameText">Welcome Student</span>
                 <div class="avatar" id="userAvatar">?</div>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
             </div>
-            <button class="logout-btn" id="logoutBtn">Logout</button>
-        </div>
-    </nav>
+        </header>
 
-    <div class="container">
-        
-        <div class="card stats-card">
-            <h3 class="card-title">Monthly Stats</h3>
-            <p class="branch-text" id="userBranchText">Department Loading...</p>
-            <svg viewBox="0 0 36 36" class="circular-chart">
-                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <text x="18" y="22.5" class="percentage">85%</text>
-            </svg>
-        </div>
-
-        <div class="card camera-card">
-            <h2 style="margin: 0; font-size: 28px; color: #0f172a;">Identity Verification</h2>
-            <p style="color: #64748b; margin-top: 10px;">Verification only works in <b>Chakan</b>.</p>
-            <button class="scan-btn" id="startScanBtn">Initialize Scanner</button>
-        </div>
-
-        <div class="card schedule-section">
-            <h3 class="card-title">Today's Schedule</h3>
-            <div class="schedule-item">
-                <div style="font-weight: 800;">09:00 AM</div>
-                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Data Structures (Room 4B)</div>
-                <div class="status present">Present</div>
-            </div>
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dash" class="content-body active">
             
-            <div class="schedule-item">
-                <div style="font-weight: 800;">11:30 AM</div>
-                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Cyber Forensics Lab</div>
-                <div id="cyberLabStatus" class="status pending">Pending</div>
+            <!-- PARAMETERS GRID -->
+            <div class="param-grid">
+                <div class="param-card"><div class="param-icon">👥</div><div><p class="card-label">Class / Division</p><p class="card-value">B Tech 25 Sem II / Q</p></div></div>
+                <div class="param-card">
+                    <div class="param-icon">📊</div>
+                    <div>
+                        <p class="card-label">Attendance Percentage</p>
+                        <p id="calcPercentage" class="card-value">0%</p>
+                        <div id="warnMsg" class="warning-text">⚠️ Critical: Below 75%</div>
+                    </div>
+                </div>
+                <div class="param-card"><div class="param-icon">📘</div><div><p class="card-label">Credits Registered</p><p id="calcCredits" class="card-value">0 / 44</p></div></div>
+            </div>
+
+            <div class="schedule-box">
+                <h3 style="margin-top:0">Today's Lecture Marking Console</h3>
+                <div id="dynamicLectures"></div>
+            </div>
+        </div>
+
+        <!-- STUDENT PROFILE TAB -->
+        <div id="tab-student" class="content-body">
+            <h2 style="margin-bottom: 25px;">Detailed Student Profile</h2>
+            <div class="info-list-card">
+                <div class="info-item"><span class="info-key">Full Name</span><span class="info-val" id="st-name">--</span></div>
+                <div class="info-item"><span class="info-key">PRN Number / UID</span><span class="info-val" id="st-prn">--</span></div>
+                <div class="info-item"><span class="info-key">Branch / Program</span><span class="info-val" id="st-branch">--</span></div>
+                <div class="info-item"><span class="info-key">Academic Year</span><span class="info-val">2025-2026</span></div>
+                <div class="info-item"><span class="info-key">Semester</span><span class="info-val">Semester II</span></div>
+                <div class="info-item"><span class="info-key">Min. Mandatory Attendance</span><span class="info-val" style="color:var(--primary-orange)">75%</span></div>
+            </div>
+        </div>
+
+        <!-- TIMETABLE TAB -->
+        <div id="tab-timetable" class="content-body">
+            <h2 style="margin-bottom: 20px">Weekly Time Table and Class Allotment</h2>
+            <div class="timetable-container">
+                <table>
+                    <thead><tr><th width="15%">Time / Day</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr></thead>
+                    <tbody>
+                        <tr><td class="day-col">9.00 - 10.00 am</td><td>Intro to AI</td><td>DSA using OOP</td><td rowspan="3">Engg. Drawing LAB</td><td rowspan="2">Intro to AI Lab</td><td rowspan="2">DSA using OOP Lab</td></tr>
+                        <tr><td class="day-col">10.00 - 11.00 am</td><td rowspan="2">M-II</td><td rowspan="2">M-II</td></tr>
+                        <tr><td class="day-col">11.00 am to 12 NOON</td><td rowspan="2">Intro to AI Lab</td><td>Technical English</td></tr>
+                        <tr><td class="day-col">12.00 pm to 01.00 pm</td><td>DSA using OOP</td><td>Introduction to AI</td><td>Engg. Drawing LAB</td><td>IKS</td></tr>
+                        <tr class="break-row"><td colspan="6">1.00 to 2.00 pm (Lunch Break)</td></tr>
+                        <tr><td class="day-col">02.00 - 03.00</td><td>Engg. Drawing</td><td>Engg. Drawing</td><td>IKS</td><td rowspan="2">DSA using OOP Lab</td><td>Activities</td></tr>
+                        <tr><td class="day-col">03.00 - 04.00</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -141,97 +146,99 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        // FIREBASE CONFIGURATION
-        const firebaseConfig = {
-            apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc",
-            authDomain: "student-attendance-syste-36412.firebaseapp.com",
-            projectId: "student-attendance-syste-36412",
-            storageBucket: "student-attendance-syste-36412.firebasestorage.app",
-            messagingSenderId: "183007048528",
-            appId: "1:183007048528:web:5bcade6da140f369013255",
-            measurementId: "G-RXGBW49ZB3"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc", authDomain: "student-attendance-syste-36412.firebaseapp.com", projectId: "student-attendance-syste-36412", storageBucket: "student-attendance-syste-36412.firebasestorage.app", messagingSenderId: "183007048528", appId: "1:183007048528:web:5bcade6da140f369013255", measurementId: "G-RXGBW49ZB3" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                const docRef = doc(db, "students", user.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    document.getElementById('userNameText').innerText = "Welcome, " + data.name;
-                    document.getElementById('userBranchText').innerText = "Department: " + data.branch;
-                    document.getElementById('userAvatar').innerText = data.name.charAt(0).toUpperCase();
-                }
-            } else {
-                window.location.href = "index.html";
-            }
-        });
+        let studentData = null;
 
-        async function verifyAndStartScan(statusBtn = null) {
-            const userAgreed = confirm("PORTAL NOTICE:\n\nTo verify your attendance, we must check that you are at the Chakan campus. Click 'OK' to allow location access.");
+        const timetableMap = {
+            1: [ { n: "Introduction to AI", t: "09:00-10:00" }, { n: "M-II", t: "10:00-12:00" }, { n: "DSA using OOP", t: "12:00-01:00" }, { n: "Engg. Drawing", t: "02:00-03:00" } ],
+            2: [ { n: "DSA using OOP", t: "09:00-10:00" }, { n: "M-II", t: "10:00-12:00" }, { n: "Introduction to AI", t: "12:00-01:00" }, { n: "Engg. Drawing", t: "02:00-03:00" } ],
+            3: [ { n: "Engg. Drawing LAB", t: "09:00-12:00" }, { n: "Intro to AI Lab", t: "12:00-01:00" }, { n: "IKS", t: "02:00-03:00" } ],
+            4: [ { n: "Intro to AI Lab", t: "09:00-11:00" }, { n: "Engg. Drawing LAB", t: "11:00-01:00" }, { n: "DSA using OOP Lab", t: "02:00-04:00" } ],
+            5: [ { n: "DSA using OOP Lab", t: "09:00-11:00" }, { n: "Technical English", t: "11:00-12:00" }, { n: "IKS", t: "12:00-01:00" }, { n: "Activities", t: "02:00-03:00" } ]
+        };
+
+        async function refreshStats(name) {
+            const q = query(collection(db, "attendance_logs"), where("name", "==", name));
+            const snap = await getDocs(q);
+            const attendedCount = snap.size;
+            const percent = ((attendedCount / 44) * 100).toFixed(2);
             
-            if (!userAgreed) return;
-
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported by your browser.");
-                return;
+            document.getElementById('calcPercentage').innerText = percent + "%";
+            document.getElementById('calcCredits').innerText = attendedCount + " / 44";
+            
+            const warn = document.getElementById('warnMsg');
+            if(percent < 75) {
+                warn.style.display = 'block';
+                document.getElementById('calcPercentage').style.color = '#be123c';
+            } else {
+                warn.style.display = 'none';
+                document.getElementById('calcPercentage').style.color = '#1e293b';
             }
-
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                    const data = await res.json();
-                    const address = data.display_name.toLowerCase();
-
-                    // --- UPDATED LOGIC: Allows Chakan OR your current ISP detected location (Kolkata/Barrackpore) ---
-                    // This ensures the system works for you even if the browser is confused.
-                    if (address.includes("chakan") || address.includes("kolkata") || address.includes("barrackpore")) {
-                        alert("Location Verified. Opening Scanner...");
-                        
-                        const camRes = await fetch('http://127.0.0.1:8000/api/start-scan');
-                        const camData = await camRes.json();
-
-                        if (camData.status === 'success') {
-                            alert("Facial Scan Successful! Attendance Marked.");
-                            if (statusBtn) {
-                                statusBtn.innerText = "Marked";
-                                statusBtn.className = "status present";
-                                statusBtn.style.cursor = "default";
-                            }
-                        } else {
-                            alert("Camera Error: Ensure main.py is running.");
-                        }
-                    } else {
-                        alert("ACCESS DENIED:\n\nSystem detected location: " + address + "\n\nAttendance is restricted to Chakan campus.");
-                    }
-                } catch (e) {
-                    alert("Error connecting to location or camera services.");
-                }
-            }, (error) => {
-                alert("Location Error: " + error.message);
-            }, { enableHighAccuracy: true });
         }
 
-        document.getElementById('startScanBtn').addEventListener('click', () => verifyAndStartScan());
-        
-        document.getElementById('cyberLabStatus').addEventListener('click', function() {
-            if (this.classList.contains('pending')) {
-                verifyAndStartScan(this);
-            }
+        function renderLectures() {
+            const container = document.getElementById('dynamicLectures');
+            const day = new Date().getDay();
+            const lectures = timetableMap[day] || [];
+            container.innerHTML = lectures.length ? lectures.map(l => `
+                <div class="lecture-row">
+                    <div><span class="lect-name">${l.n}</span><br><span class="lect-time">${l.t}</span></div>
+                    <button class="status-btn pending" onclick="verifyAndScan(this, '${l.n}')">Pending</button>
+                </div>`).join('') : "<p>No lectures scheduled for today.</p>";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snap = await getDoc(doc(db, "students", user.uid));
+                if (snap.exists()) {
+                    studentData = snap.data();
+                    document.getElementById('userNameText').innerText = "Welcome " + studentData.name;
+                    document.getElementById('userAvatar').innerText = studentData.name.charAt(0).toUpperCase();
+                    document.getElementById('st-name').innerText = studentData.name;
+                    document.getElementById('st-branch').innerText = studentData.branch;
+                    document.getElementById('st-prn').innerText = user.uid.substring(0,8).toUpperCase();
+                    renderLectures();
+                    refreshStats(studentData.name);
+                }
+            } else { window.location.href = "index.html"; }
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = "index.html");
-        });
+        window.showTab = (id, el) => {
+            document.querySelectorAll('.content-body').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); el.classList.add('active');
+        };
+
+        window.verifyAndScan = async (btn, lect) => {
+            if (btn.classList.contains('present')) return;
+            const agree = confirm(`Mark attendance for ${lect}?`);
+            if (!agree) return;
+
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+                    const data = await res.json();
+                    const addr = data.display_name.toLowerCase();
+                    if (addr.includes("chakan") || addr.includes("kolkata") || addr.includes("barrackpore") || addr.includes("pune") || addr.includes("khed")) {
+                        const camData = await (await fetch('http://127.0.0.1:8000/api/start-scan')).json();
+                        if (camData.status === 'success') {
+                            await addDoc(collection(db, "attendance_logs"), { name: studentData.name, lecture: lect, branch: studentData.branch, timestamp: serverTimestamp(), status: "VERIFIED" });
+                            btn.innerText = "Marked"; btn.className = "status-btn present";
+                            refreshStats(studentData.name);
+                            alert("Success!");
+                        }
+                    } else { alert("ACCESS DENIED: Not on Campus."); }
+                } catch (e) { alert("Error: Camera server offline."); }
+            });
+        };
+
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth).then(()=> window.location.href="index.html"));
     </script>
 </body>
 </html>
