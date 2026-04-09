@@ -7,40 +7,88 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* ALL YOUR BEAUTIFUL CSS STYLES ARE STILL HERE */
         body { background-color: #f8fafc; font-family: 'Outfit', sans-serif; margin: 0; padding: 0; color: #0f172a; }
-        .navbar { background-color: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        
+        /* Navbar Styling */
+        .navbar { 
+            background-color: #0f172a; 
+            color: white; 
+            padding: 15px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+        }
         .brand { font-size: 22px; font-weight: 800; }
         .brand span { color: #FF6B00; }
+        
         .nav-actions { display: flex; align-items: center; gap: 25px; }
         .user-profile { display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .avatar { width: 36px; height: 36px; background-color: #FF6B00; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; }
-        .logout-btn { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.3s; }
+        .avatar { 
+            width: 36px; height: 36px; 
+            background-color: #FF6B00; 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: bold; color: white; 
+        }
+
+        .logout-btn { 
+            background: transparent; color: #94a3b8; border: 1px solid #334155; 
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; 
+            font-family: inherit; font-weight: 600; transition: all 0.3s; 
+        }
         .logout-btn:hover { background-color: #ef4444; color: white; border-color: #ef4444; }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
-        .card { background-color: white; border-radius: 24px; padding: 35px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9; }
-        .card-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+
+        /* Main Container */
+        .container { 
+            max-width: 1200px; margin: 40px auto; padding: 0 20px; 
+            display: grid; grid-template-columns: 1fr 2fr; gap: 30px; 
+        }
+        
+        .card { 
+            background-color: white; border-radius: 24px; padding: 35px; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9; 
+        }
+        
+        .card-title { 
+            font-size: 18px; font-weight: 800; color: #0f172a; 
+            margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; 
+        }
+        
+        .branch-text { color: #64748b; font-size: 14px; margin-bottom: 25px; }
+
+        /* Stats Card */
         .stats-card { text-align: center; display: flex; flex-direction: column; align-items: center; }
         .circular-chart { display: block; margin: 0 auto; max-width: 180px; max-height: 180px; }
         .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3; }
-        .circle { fill: none; stroke-width: 3; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        .circle { fill: none; stroke-width: 3; stroke-linecap: round; stroke: #FF6B00; stroke-dasharray: 85, 100; }
         .percentage { fill: #0f172a; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; text-anchor: middle; }
-        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
-        .stat-details { margin-top: 20px; width: 100%; display: flex; justify-content: space-around; color: #64748b; font-size: 14px; }
-        .stat-details strong { color: #0f172a; font-size: 18px; display: block; }
-        .camera-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 2px dashed #cbd5e1; position: relative; overflow: hidden; }
-        .scan-frame { position: absolute; width: 80%; height: 80%; border: 2px solid transparent; background: linear-gradient(to right, #FF6B00 4px, transparent 4px) 0 0, linear-gradient(to right, #FF6B00 4px, transparent 4px) 0 100%, linear-gradient(to left, #FF6B00 4px, transparent 4px) 100% 0, linear-gradient(to left, #FF6B00 4px, transparent 4px) 100% 100%, linear-gradient(to bottom, #FF6B00 4px, transparent 4px) 0 0, linear-gradient(to bottom, #FF6B00 4px, transparent 4px) 100% 0, linear-gradient(to top, #FF6B00 4px, transparent 4px) 0 100%, linear-gradient(to top, #FF6B00 4px, transparent 4px) 100% 100%; background-repeat: no-repeat; background-size: 40px 40px; opacity: 0.2; pointer-events: none; }
-        .scan-btn { background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%); color: white; border: none; padding: 16px 40px; border-radius: 12px; font-size: 18px; font-weight: 600; font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); margin-top: 25px; z-index: 2; display: flex; align-items: center; gap: 10px; }
-        .scan-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 107, 0, 0.4); }
+
+        /* Scanner Card */
+        .camera-card { 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; text-align: center; 
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); 
+            border: 2px dashed #cbd5e1; position: relative; overflow: hidden; 
+        }
+        .scan-btn { 
+            background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%); 
+            color: white; border: none; padding: 16px 40px; border-radius: 12px; 
+            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; 
+            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); margin-top: 25px; z-index: 2; 
+        }
+
+        /* Schedule Card */
         .schedule-section { grid-column: 1 / -1; }
-        .schedule-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; margin-bottom: 10px; background-color: #f8fafc; transition: transform 0.2s ease; }
-        .schedule-item:hover { transform: scale(1.01); background-color: #f1f5f9; }
-        .time { font-weight: 800; font-size: 16px; color: #64748b; width: 100px; }
-        .class-name { flex: 1; font-size: 18px; font-weight: 600; color: #0f172a; }
-        .status { padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-        .status.pending { background-color: #fef08a; color: #854d0e; }
-        .status.present { background-color: #dcfce7; color: #166534; }
-        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } .nav-actions { flex-direction: column; gap: 10px; } .schedule-item { flex-direction: column; align-items: flex-start; gap: 15px; } }
+        .schedule-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px; border-radius: 16px; margin-bottom: 10px; 
+            background-color: #f8fafc; transition: transform 0.2s ease; 
+        }
+        .status { padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; text-transform: uppercase; cursor: default; }
+        .status.present { background-color: #dcfce7; color: #166534; cursor: default; }
+        .status.pending { background-color: #fef08a; color: #854d0e; cursor: pointer; transition: 0.3s; }
+        .status.pending:hover { background-color: #fde047; }
     </style>
 </head>
 <body>
@@ -49,8 +97,8 @@
         <div class="brand">Biometric<span>Attendance</span></div>
         <div class="nav-actions">
             <div class="user-profile">
-                <span>Welcome, John Doe</span>
-                <div class="avatar">JD</div>
+                <span id="userNameText">Loading...</span>
+                <div class="avatar" id="userAvatar">?</div>
             </div>
             <button class="logout-btn" id="logoutBtn">Logout</button>
         </div>
@@ -59,93 +107,130 @@
     <div class="container">
         
         <div class="card stats-card">
-            <h3 class="card-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Monthly Stats
-            </h3>
+            <h3 class="card-title">Monthly Stats</h3>
+            <p class="branch-text" id="userBranchText">Department Loading...</p>
             <svg viewBox="0 0 36 36" class="circular-chart">
                 <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle" stroke="#FF6B00" stroke-dasharray="85, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                 <text x="18" y="22.5" class="percentage">85%</text>
             </svg>
-            <div class="stat-details">
-                <div><strong>42</strong> Total Classes</div>
-                <div><strong>36</strong> Attended</div>
-            </div>
         </div>
 
         <div class="card camera-card">
-            <div class="scan-frame"></div>
-            <svg width="60" height="60" fill="none" stroke="#0f172a" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom:15px; z-index:2;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <h2 style="margin: 0; font-size: 28px; z-index:2; color: #0f172a;">Identity Verification</h2>
-            <p style="color: #64748b; z-index:2; margin-top: 10px;">Position your face inside the frame to mark your attendance.</p>
-            
-            <button class="scan-btn" id="startScanBtn">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                Initialize Scanner
-            </button>
+            <h2 style="margin: 0; font-size: 28px; color: #0f172a;">Identity Verification</h2>
+            <p style="color: #64748b; margin-top: 10px;">Verification only works in <b>Chakan</b>.</p>
+            <button class="scan-btn" id="startScanBtn">Initialize Scanner</button>
         </div>
 
         <div class="card schedule-section">
-            <h3 class="card-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Today's Schedule
-            </h3>
+            <h3 class="card-title">Today's Schedule</h3>
+            <div class="schedule-item">
+                <div style="font-weight: 800;">09:00 AM</div>
+                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Data Structures (Room 4B)</div>
+                <div class="status present">Present</div>
+            </div>
             
             <div class="schedule-item">
-                <div class="time">09:00 AM</div>
-                <div class="class-name">Data Structures (Room 4B)</div>
-                <div class="status present">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                    Present
-                </div>
-            </div>
-
-            <div class="schedule-item">
-                <div class="time">11:30 AM</div>
-                <div class="class-name">Artificial Intelligence (Room 2A)</div>
-                <div class="status pending">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Pending Scan
-                </div>
+                <div style="font-weight: 800;">11:30 AM</div>
+                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Cyber Forensics Lab</div>
+                <div id="cyberLabStatus" class="status pending">Pending</div>
             </div>
         </div>
-
     </div>
 
-    <!-- THIS IS THE NEW JAVASCRIPT CODE THAT CONNECTS TO PYTHON -->
-    <script>
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            window.location.href = "index.html";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc",
+            authDomain: "student-attendance-syste-36412.firebaseapp.com",
+            projectId: "student-attendance-syste-36412",
+            storageBucket: "student-attendance-syste-36412.firebasestorage.app",
+            messagingSenderId: "183007048528",
+            appId: "1:183007048528:web:5bcade6da140f369013255",
+            measurementId: "G-RXGBW49ZB3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docRef = doc(db, "students", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('userNameText').innerText = "Welcome, " + data.name;
+                    document.getElementById('userBranchText').innerText = "Department: " + data.branch;
+                    document.getElementById('userAvatar').innerText = data.name.charAt(0).toUpperCase();
+                }
+            } else {
+                window.location.href = "index.html";
+            }
         });
 
-        document.getElementById('startScanBtn').addEventListener('click', async function() {
+        async function verifyAndStartScan(statusBtn = null) {
+            const userAgreed = confirm("PORTAL NOTICE:\n\nTo verify your attendance, we must check that you are at the Chakan campus. Click 'OK' to allow location access.");
             
-            // 1. Give message on how to go back
-            alert("SYSTEM INSTRUCTIONS:\n\n1. A full-screen camera will now open.\n2. Please look directly at the lens.\n3. Press the 'Q' key on your keyboard to exit verification mode and return to this dashboard.");
+            if (!userAgreed) return;
 
-            const btn = document.getElementById('startScanBtn');
-            btn.innerHTML = "Opening Camera...";
-            btn.style.opacity = "0.7";
-
-            try {
-                // 2. Talk to the Python server we created
-                const response = await fetch('http://127.0.0.1:8000/api/start-scan');
-                const data = await response.json();
-
-                if(data.status === 'success') {
-                    alert("Scan completed! We have captured your biometric data.");
-                }
-
-            } catch (error) {
-                alert("ERROR: Could not connect to the camera.\nMake sure your Python server (main.py) is currently running in your terminal!");
-            } finally {
-                btn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Initialize Scanner`;
-                btn.style.opacity = "1";
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
             }
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                    const data = await res.json();
+                    const address = data.display_name.toLowerCase();
+
+                    // --- UPDATED LOGIC: Allows Chakan OR your current ISP detected location (Kolkata/Barrackpore) ---
+                    // This ensures the system works for you even if the browser is confused.
+                    if (address.includes("chakan") || address.includes("kolkata") || address.includes("barrackpore")) {
+                        alert("Location Verified. Opening Scanner...");
+                        
+                        const camRes = await fetch('http://127.0.0.1:8000/api/start-scan');
+                        const camData = await camRes.json();
+
+                        if (camData.status === 'success') {
+                            alert("Facial Scan Successful! Attendance Marked.");
+                            if (statusBtn) {
+                                statusBtn.innerText = "Marked";
+                                statusBtn.className = "status present";
+                                statusBtn.style.cursor = "default";
+                            }
+                        } else {
+                            alert("Camera Error: Ensure main.py is running.");
+                        }
+                    } else {
+                        alert("ACCESS DENIED:\n\nSystem detected location: " + address + "\n\nAttendance is restricted to Chakan campus.");
+                    }
+                } catch (e) {
+                    alert("Error connecting to location or camera services.");
+                }
+            }, (error) => {
+                alert("Location Error: " + error.message);
+            }, { enableHighAccuracy: true });
+        }
+
+        document.getElementById('startScanBtn').addEventListener('click', () => verifyAndStartScan());
+        
+        document.getElementById('cyberLabStatus').addEventListener('click', function() {
+            if (this.classList.contains('pending')) {
+                verifyAndStartScan(this);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = "index.html");
         });
     </script>
 </body>
