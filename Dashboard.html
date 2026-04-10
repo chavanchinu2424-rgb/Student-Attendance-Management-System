@@ -6,55 +6,26 @@
     <title>Dashboard - Biometric Attendance</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
+    <!-- NEW: Import the Face-API.js library for Facial Recognition -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
     <style>
         body { background-color: #f8fafc; font-family: 'Outfit', sans-serif; margin: 0; padding: 0; color: #0f172a; }
         
         /* Navbar Styling */
-        .navbar { 
-            background-color: #0f172a; 
-            color: white; 
-            padding: 15px 40px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-        }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .brand { font-size: 22px; font-weight: 800; }
         .brand span { color: #FF6B00; }
-        
         .nav-actions { display: flex; align-items: center; gap: 25px; }
         .user-profile { display: flex; align-items: center; gap: 12px; font-weight: 600; }
-        .avatar { 
-            width: 36px; height: 36px; 
-            background-color: #FF6B00; 
-            border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; 
-            font-weight: bold; color: white; 
-        }
-
-        .logout-btn { 
-            background: transparent; color: #94a3b8; border: 1px solid #334155; 
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; 
-            font-family: inherit; font-weight: 600; transition: all 0.3s; 
-        }
+        .avatar { width: 36px; height: 36px; background-color: #FF6B00; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; }
+        .logout-btn { background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600; transition: all 0.3s; }
         .logout-btn:hover { background-color: #ef4444; color: white; border-color: #ef4444; }
 
         /* Main Container */
-        .container { 
-            max-width: 1200px; margin: 40px auto; padding: 0 20px; 
-            display: grid; grid-template-columns: 1fr 2fr; gap: 30px; 
-        }
-        
-        .card { 
-            background-color: white; border-radius: 24px; padding: 35px; 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9; 
-        }
-        
-        .card-title { 
-            font-size: 18px; font-weight: 800; color: #0f172a; 
-            margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; 
-        }
-        
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        .card { background-color: white; border-radius: 24px; padding: 35px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); border: 1px solid #f1f5f9; }
+        .card-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
         .branch-text { color: #64748b; font-size: 14px; margin-bottom: 25px; }
 
         /* Stats Card */
@@ -65,26 +36,16 @@
         .percentage { fill: #0f172a; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; text-anchor: middle; }
 
         /* Scanner Card */
-        .camera-card { 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; text-align: center; 
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); 
-            border: 2px dashed #cbd5e1; position: relative; overflow: hidden; 
-        }
-        .scan-btn { 
-            background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%); 
-            color: white; border: none; padding: 16px 40px; border-radius: 12px; 
-            font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; 
-            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); margin-top: 25px; z-index: 2; 
-        }
+        .camera-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 2px dashed #cbd5e1; position: relative; overflow: hidden; }
+        .scan-btn { background: linear-gradient(135deg, #FF8A00 0%, #FF6B00 100%); color: white; border: none; padding: 16px 40px; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3); margin-top: 25px; z-index: 2; }
+        .scan-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        
+        /* NEW: Webcam Video Styling */
+        #webcamVideo { border-radius: 12px; margin-top: 20px; border: 4px solid #FF6B00; box-shadow: 0 10px 30px rgba(255, 107, 0, 0.2); }
 
         /* Schedule Card */
         .schedule-section { grid-column: 1 / -1; }
-        .schedule-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px; border-radius: 16px; margin-bottom: 10px; 
-            background-color: #f8fafc; transition: transform 0.2s ease; 
-        }
+        .schedule-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 16px; margin-bottom: 10px; background-color: #f8fafc; transition: transform 0.2s ease; }
         .status { padding: 8px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; text-transform: uppercase; cursor: default; }
         .status.present { background-color: #dcfce7; color: #166534; cursor: default; }
         .status.pending { background-color: #fef08a; color: #854d0e; cursor: pointer; transition: 0.3s; }
@@ -118,7 +79,14 @@
 
         <div class="card camera-card">
             <h2 style="margin: 0; font-size: 28px; color: #0f172a;">Identity Verification</h2>
-            <p style="color: #64748b; margin-top: 10px;">Verification only works in <b>Chakan</b>.</p>
+            <p style="color: #64748b; margin-top: 10px;" id="camStatusText">Verification only works in <b>Chakan</b>.</p>
+            
+            <!-- NEW: Video player for live webcam, hidden by default -->
+            <video id="webcamVideo" width="320" height="240" autoplay muted style="display:none;"></video>
+            
+            <!-- NEW: Hidden image container to load the Firebase profile photo -->
+            <img id="referenceImage" crossorigin="anonymous" style="display:none;">
+
             <button class="scan-btn" id="startScanBtn">Initialize Scanner</button>
         </div>
 
@@ -143,7 +111,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc",
             authDomain: "student-attendance-syste-36412.firebaseapp.com",
@@ -158,6 +125,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // NEW: Variable to hold the user's uploaded photo URL
+        let userProfilePhotoURL = null;
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const docRef = doc(db, "students", user.uid);
@@ -167,6 +137,12 @@
                     document.getElementById('userNameText').innerText = "Welcome, " + data.name;
                     document.getElementById('userBranchText').innerText = "Department: " + data.branch;
                     document.getElementById('userAvatar').innerText = data.name.charAt(0).toUpperCase();
+                    
+                    // NEW: Grab the photo URL we saved during registration
+                    if(data.photoURL) {
+                        userProfilePhotoURL = data.photoURL;
+                        document.getElementById('referenceImage').src = userProfilePhotoURL;
+                    }
                 }
             } else {
                 window.location.href = "index.html";
@@ -174,14 +150,13 @@
         });
 
         async function verifyAndStartScan(statusBtn = null) {
-            const userAgreed = confirm("PORTAL NOTICE:\n\nTo verify your attendance, we must check that you are at the Chakan campus. Click 'OK' to allow location access.");
-            
-            if (!userAgreed) return;
-
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported by your browser.");
+            if (!userProfilePhotoURL) {
+                alert("No profile photo found! You need to register again with a photo.");
                 return;
             }
+
+            const userAgreed = confirm("PORTAL NOTICE:\n\nTo verify your attendance, we must check that you are at the Chakan campus. Click 'OK' to allow location access.");
+            if (!userAgreed) return;
 
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const lat = position.coords.latitude;
@@ -192,33 +167,107 @@
                     const data = await res.json();
                     const address = data.display_name.toLowerCase();
 
-                    // --- UPDATED LOGIC: Allows Chakan OR your current ISP detected location (Kolkata/Barrackpore) ---
-                    // This ensures the system works for you even if the browser is confused.
                     if (address.includes("chakan") || address.includes("kolkata") || address.includes("barrackpore")) {
-                        alert("Location Verified. Opening Scanner...");
-                        
-                        const camRes = await fetch('http://127.0.0.1:8000/api/start-scan');
-                        const camData = await camRes.json();
-
-                        if (camData.status === 'success') {
-                            alert("Facial Scan Successful! Attendance Marked.");
-                            if (statusBtn) {
-                                statusBtn.innerText = "Marked";
-                                statusBtn.className = "status present";
-                                statusBtn.style.cursor = "default";
-                            }
-                        } else {
-                            alert("Camera Error: Ensure main.py is running.");
-                        }
+                        // NEW: Replaced Python call with our new AI function
+                        await startFacialRecognition(statusBtn);
                     } else {
                         alert("ACCESS DENIED:\n\nSystem detected location: " + address + "\n\nAttendance is restricted to Chakan campus.");
                     }
                 } catch (e) {
-                    alert("Error connecting to location or camera services.");
+                    alert("Error connecting to location services.");
                 }
-            }, (error) => {
-                alert("Location Error: " + error.message);
-            }, { enableHighAccuracy: true });
+            }, (error) => { alert("Location Error: " + error.message); }, { enableHighAccuracy: true });
+        }
+
+        // NEW: Core Facial Recognition Function
+        async function startFacialRecognition(statusBtn) {
+            const btn = document.getElementById('startScanBtn');
+            const statusText = document.getElementById('camStatusText');
+            const video = document.getElementById('webcamVideo');
+            const refImage = document.getElementById('referenceImage');
+
+            btn.innerText = "Loading AI Models...";
+            btn.disabled = true;
+
+            try {
+                // 1. Load the AI Models from a public server
+                const MODEL_URL = 'https://vladmandic.github.io/face-api/model/';
+                await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+
+                btn.innerText = "Processing Profile Photo...";
+
+                // 2. Scan the downloaded Firebase profile photo
+                const refDetection = await faceapi.detectSingleFace(refImage).withFaceLandmarks().withFaceDescriptor();
+                if (!refDetection) {
+                    alert("AI could not detect a clear face in your saved profile photo.");
+                    btn.innerText = "Initialize Scanner";
+                    btn.disabled = false;
+                    return;
+                }
+                const faceMatcher = new faceapi.FaceMatcher(refDetection.descriptor, 0.55); // 0.55 is the strictness level
+
+                btn.innerText = "Starting Webcam...";
+
+                // 3. Open Web Camera
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.style.display = "block";
+                btn.style.display = "none";
+                statusText.innerText = "Please look directly at the camera...";
+
+                // 4. Continuously scan the live video until a match is found
+                video.onplay = async () => {
+                    const scanInterval = setInterval(async () => {
+                        const liveDetection = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor();
+                        
+                        if (liveDetection) {
+                            const match = faceMatcher.findBestMatch(liveDetection.descriptor);
+                            
+                            // "person" means it matched with the reference photo!
+                            if (match.label === "person") { 
+                                clearInterval(scanInterval);
+                                statusText.innerHTML = "<b>Match Found! Identity Verified.</b>";
+                                statusText.style.color = "green";
+                                
+                                // Update Button Status to Present
+                                if (statusBtn) {
+                                    statusBtn.innerText = "Marked";
+                                    statusBtn.className = "status present";
+                                    statusBtn.style.cursor = "default";
+                                }
+                                alert("Facial Scan Successful! Attendance Marked.");
+                                
+                                // Turn off camera
+                                stream.getTracks().forEach(track => track.stop());
+                                video.style.display = "none";
+                                btn.style.display = "inline-block";
+                                btn.innerText = "Scan Complete";
+                            }
+                        }
+                    }, 1000); // Check the video every 1 second
+                    
+                    // Stop trying after 15 seconds
+                    setTimeout(() => {
+                        if(video.style.display === "block") {
+                            clearInterval(scanInterval);
+                            stream.getTracks().forEach(track => track.stop());
+                            video.style.display = "none";
+                            btn.style.display = "inline-block";
+                            btn.innerText = "Initialize Scanner";
+                            btn.disabled = false;
+                            statusText.innerText = "Verification failed. Face did not match.";
+                            statusText.style.color = "red";
+                            alert("Face not recognized! Please try again.");
+                        }
+                    }, 15000); 
+                };
+            } catch (err) {
+                alert("Camera or AI Error: " + err.message);
+                btn.innerText = "Initialize Scanner";
+                btn.disabled = false;
+            }
         }
 
         document.getElementById('startScanBtn').addEventListener('click', () => verifyAndStartScan());
