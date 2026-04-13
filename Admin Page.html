@@ -22,17 +22,18 @@
         .stat-card h3 { margin: 0; font-size: 13px; color: #64748b; text-transform: uppercase; }
         .stat-card .value { font-size: 32px; font-weight: 800; color: var(--dark); margin-top: 10px; }
 
-        .card-container { background: white; border-radius: 24px; padding: 30px; border: 1px solid #e2e8f0; }
+        .card-container { background: white; border-radius: 24px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
         .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .search-bar { padding: 12px 18px; border: 2px solid #f1f5f9; border-radius: 12px; width: 320px; }
+        .search-bar { padding: 12px 18px; border: 2px solid #f1f5f9; border-radius: 12px; width: 320px; outline: none; }
+        .search-bar:focus { border-color: var(--primary); }
 
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
         th { color: #64748b; font-size: 12px; text-transform: uppercase; font-weight: 800; }
         .badge { padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; background: #fff7ed; color: var(--primary); }
         .badge-success { background: #dcfce7; color: #166534; }
-        
-        /* SETTINGS GRID */
+        .user-photo { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; border: 2px solid #f1f5f9; }
+
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 750px; }
         .setting-group { margin-bottom: 20px; }
         .full-row { grid-column: span 2; }
@@ -50,7 +51,7 @@
         <div class="nav-item active" onclick="switchSection('directory', this)">Student Directory</div>
         <div class="nav-item" onclick="switchSection('logs', this)">Attendance Logs</div>
         <div class="nav-item" onclick="switchSection('settings', this)">System Settings</div>
-        <button class="btn-logout" onclick="location.href='index.html'">Logout</button>
+        <button class="btn-logout" onclick="sessionStorage.clear(); location.href='index.html'">Logout</button>
     </div>
 
     <div class="main-content">
@@ -62,7 +63,7 @@
                 <div class="stat-card"><h3>AR VR Dept.</h3><div class="value" id="stat-arvr">0</div></div>
             </div>
             <div class="card-container">
-                <div class="table-header"><h3>Registered Accounts</h3><input type="text" class="search-bar" id="search-students" placeholder="Search students..."></div>
+                <div class="table-header"><h3>Registered Accounts</h3><input type="text" class="search-bar" id="search-students" placeholder="Search by name or email..."></div>
                 <table><thead><tr><th>Full Name</th><th>Email ID</th><th>Branch</th><th>Registered</th></tr></thead><tbody id="student-table-body"></tbody></table>
             </div>
         </div>
@@ -71,7 +72,7 @@
             <div class="header"><h1>Attendance History</h1></div>
             <div class="card-container">
                 <div class="table-header"><h3>Facial Scan Logs (Live)</h3><button class="export-btn" id="exportCSV">Download CSV Report</button></div>
-                <table><thead><tr><th>Student Name</th><th>Lecture</th><th>Time Log</th><th>Verification</th></tr></thead><tbody id="logs-table-body"></tbody></table>
+                <table><thead><tr><th>Photo</th><th>Student Name</th><th>Lecture</th><th>Time Log</th><th>Verification</th></tr></thead><tbody id="logs-table-body"></tbody></table>
             </div>
         </div>
 
@@ -85,19 +86,25 @@
                     <div class="setting-group"><label>System Mode</label><select><option selected>Live Monitoring</option><option>Maintenance Mode</option></select></div>
                     <div class="setting-group"><label>Admin Alert Email</label><input type="email" value="admin@adypu.edu"></div>
                 </div>
-                <button style="background:var(--primary); color:white; border:none; padding:15px 35px; border-radius:12px; font-weight:700; cursor:pointer;">UPDATE SETTINGS</button>
+                <button onclick="alert('Settings Updated')" style="background:var(--primary); color:white; border:none; padding:15px 35px; border-radius:12px; font-weight:700; cursor:pointer;">UPDATE SETTINGS</button>
             </div>
         </div>
     </div>
 
     <script type="module">
+        // --- SECURITY GUARD MATCHED TO LOGIN PAGE ---
+        if (sessionStorage.getItem('adminAccessCode') !== 'ADYPU_ADMIN_2025') {
+            window.location.href = "index.html";
+        }
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         const firebaseConfig = { apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc", authDomain: "student-attendance-syste-36412.firebaseapp.com", projectId: "student-attendance-syste-36412", storageBucket: "student-attendance-syste-36412.firebasestorage.app", messagingSenderId: "183007048528", appId: "1:183007048528:web:5bcade6da140f369013255", measurementId: "G-RXGBW49ZB3" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let exportData = [];
+        let allStudents = [];
+        let allLogs = [];
 
         window.switchSection = (id, el) => {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -106,41 +113,51 @@
         };
 
         async function loadData() {
-            const dirBody = document.getElementById('student-table-body');
-            const logsBody = document.getElementById('logs-table-body');
-            
-            const qDir = query(collection(db, "students"), orderBy("registeredAt", "desc"));
-            const snapDir = await getDocs(qDir);
-            let cyber = 0, arvr = 0;
-            dirBody.innerHTML = "";
-            snapDir.forEach(doc => {
-                const d = doc.data();
-                if(d.branch.includes("Cyber")) cyber++; else arvr++;
-                dirBody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${d.email}</td><td><span class="badge badge-orange">${d.branch}</span></td><td>${d.registeredAt.toDate().toLocaleDateString()}</td></tr>`;
-            });
-            document.getElementById('stat-total').innerText = snapDir.size;
-            document.getElementById('stat-cyber').innerText = cyber;
-            document.getElementById('stat-arvr').innerText = arvr;
+            const snapDir = await getDocs(query(collection(db, "students"), orderBy("registeredAt", "desc")));
+            allStudents = []; 
+            snapDir.forEach(doc => allStudents.push(doc.data()));
+            renderStudents(allStudents);
 
-            const qLogs = query(collection(db, "attendance_logs"), orderBy("timestamp", "desc"));
-            const snapLogs = await getDocs(qLogs);
+            const snapLogs = await getDocs(query(collection(db, "attendance_logs"), orderBy("timestamp", "desc")));
+            const logsBody = document.getElementById('logs-table-body');
             logsBody.innerHTML = "";
-            exportData = [];
             snapLogs.forEach(doc => {
                 const d = doc.data();
-                const time = d.timestamp.toDate().toLocaleString();
-                exportData.push({ Name: d.name, Lecture: d.lecture, Time: time });
-                logsBody.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${d.lecture}</td><td>${time}</td><td><span class="badge badge-success">VERIFIED</span></td></tr>`;
+                allLogs.push(d);
+                const timeStr = d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A';
+                logsBody.innerHTML += `<tr><td><img src="${d.photoURL || 'https://via.placeholder.com/45'}" class="user-photo"></td><td><strong>${d.name}</strong></td><td>${d.lecture}</td><td>${timeStr}</td><td><span class="badge badge-success">VERIFIED</span></td></tr>`;
             });
         }
 
-        document.getElementById('exportCSV').addEventListener('click', () => {
-            const csv = [["Name", "Lecture", "Time"], ...exportData.map(r => [r.Name, r.Lecture, r.Time])].map(e => e.join(",")).join("\n");
+        function renderStudents(data) {
+            const body = document.getElementById('student-table-body');
+            body.innerHTML = ""; let cyber = 0, arvr = 0;
+            data.forEach(d => {
+                if(d.branch && d.branch.includes("Cyber")) cyber++; else arvr++;
+                const regDate = d.registeredAt ? d.registeredAt.toDate().toLocaleDateString() : 'N/A';
+                body.innerHTML += `<tr><td><strong>${d.name}</strong></td><td>${d.email}</td><td><span class="badge">${d.branch}</span></td><td>${regDate}</td></tr>`;
+            });
+            document.getElementById('stat-total').innerText = data.length;
+            document.getElementById('stat-cyber').innerText = cyber;
+            document.getElementById('stat-arvr').innerText = arvr;
+        }
+
+        document.getElementById('search-students').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            renderStudents(allStudents.filter(s => s.name.toLowerCase().includes(term) || s.email.toLowerCase().includes(term)));
+        });
+
+        document.getElementById('exportCSV').onclick = () => {
+            let csv = "Name,Lecture,Time,Status\n";
+            allLogs.forEach(l => {
+                const t = l.timestamp ? l.timestamp.toDate().toLocaleString().replace(/,/g, "") : "N/A";
+                csv += `${l.name},${l.lecture},${t},VERIFIED\n`;
+            });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url; a.download = "Attendance_Report.csv"; a.click();
-        });
+            a.href = url; a.download = 'Attendance_Report.csv'; a.click();
+        };
 
         loadData();
     </script>
