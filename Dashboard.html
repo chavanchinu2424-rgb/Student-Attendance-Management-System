@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Biometric Attendance</title>
+    <title>Student Portal | ADYPU Biometric</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- NEW: Import the Face-API.js library for Facial Recognition -->
@@ -54,27 +54,46 @@
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="brand">Biometric<span>Attendance</span></div>
-        <div class="nav-actions">
-            <div class="user-profile">
-                <span id="userNameText">Loading...</span>
-                <div class="avatar" id="userAvatar">?</div>
-            </div>
-            <button class="logout-btn" id="logoutBtn">Logout</button>
+    <aside class="sidebar">
+        <div class="logo-section"><h2 class="brand-text">ADYPU<span> PORTAL</span></h2></div>
+        <div class="menu-list">
+            <div class="menu-item active" onclick="showTab('tab-dash', this)">Dashboard</div>
+            <div class="menu-item" onclick="showTab('tab-student', this)">Student Related</div>
+            <div class="menu-item" onclick="showTab('tab-timetable', this)">Manage Time Table</div>
         </div>
-    </nav>
+    </aside>
 
-    <div class="container">
-        
-        <div class="card stats-card">
-            <h3 class="card-title">Monthly Stats</h3>
-            <p class="branch-text" id="userBranchText">Department Loading...</p>
-            <svg viewBox="0 0 36 36" class="circular-chart">
-                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <path class="circle" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                <text x="18" y="22.5" class="percentage">85%</text>
-            </svg>
+    <div class="main-wrapper">
+        <header class="top-navbar">
+            <div>Active Academic Year : 2025-26 Even Term</div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span id="userNameText">Welcome Student</span>
+                <div class="avatar" id="userAvatar">?</div>
+                <button onclick="location.href='index.html'" style="background:white; color:var(--primary-orange); border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">Logout</button>
+            </div>
+        </header>
+
+        <div id="tab-dash" class="content-body active">
+            <div class="param-grid">
+                <div class="param-card">👥<div><p style="font-size:12px; color:#64748b; margin:0">Class / Division</p><p style="font-weight:800; margin:5px 0">B Tech 25 Sem II / Q</p></div></div>
+                <div class="param-card">📊<div><p style="font-size:12px; color:#64748b; margin:0">Attendance Percentage</p><p id="calcPercentage" style="font-weight:800; margin:5px 0">0%</p></div></div>
+            </div>
+            <div class="schedule-box">
+                <h3 style="margin-top:0">Today's Lecture Marking Console</h3>
+                <div id="dynamicLectures"></div>
+            </div>
+        </div>
+
+        <div id="tab-student" class="content-body">
+            <h2 style="margin-bottom: 25px;">Detailed Student Profile</h2>
+            <div class="info-list-card">
+                <div class="info-item"><span class="info-key">Full Name</span><span class="info-val" id="st-name">--</span></div>
+                <div class="info-item"><span class="info-key">PRN Number / UID</span><span class="info-val" id="st-prn">--</span></div>
+                <div class="info-item"><span class="info-key">Branch / Program</span><span class="info-val" id="st-branch">--</span></div>
+                <div class="info-item"><span class="info-key">Academic Year</span><span class="info-val">2025-2026</span></div>
+                <div class="info-item"><span class="info-key">Semester</span><span class="info-val">Semester II</span></div>
+                <div class="info-item"><span class="info-key">Min. Mandatory Attendance</span><span class="info-val" style="color:var(--primary-orange)">75%</span></div>
+            </div>
         </div>
 
         <div class="card camera-card">
@@ -89,19 +108,20 @@
 
             <button class="scan-btn" id="startScanBtn">Initialize Scanner</button>
         </div>
+    </div>
 
-        <div class="card schedule-section">
-            <h3 class="card-title">Today's Schedule</h3>
-            <div class="schedule-item">
-                <div style="font-weight: 800;">09:00 AM</div>
-                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Data Structures (Room 4B)</div>
-                <div class="status present">Present</div>
+    <div id="cameraModal">
+        <div class="modal-content">
+            <h3 style="margin-top:0">Identity Verification</h3>
+            <div class="video-container">
+                <video id="preview" width="720" height="540" autoplay></video>
+                <div class="face-guide-rect"></div>
             </div>
+            <div id="scanStatus">Awaiting Detection...</div>
             
-            <div class="schedule-item">
-                <div style="font-weight: 800;">11:30 AM</div>
-                <div style="flex: 1; margin-left: 20px; font-weight: 600;">Cyber Forensics Lab</div>
-                <div id="cyberLabStatus" class="status pending">Pending</div>
+            <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+                <button id="scanNowBtn" style="background:var(--primary-orange); color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:700; cursor:pointer;">MARK ATTENDANCE</button>
+                <button id="closeCamBtn" style="background:#64748b; color:white; border:none; padding:12px 25px; border-radius:10px; font-weight:700; cursor:pointer;">CANCEL</button>
             </div>
         </div>
     </div>
@@ -121,6 +141,7 @@
             measurementId: "G-RXGBW49ZB3"
         };
 
+        const firebaseConfig = { apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc", authDomain: "student-attendance-syste-36412.firebaseapp.com", projectId: "student-attendance-syste-36412", storageBucket: "student-attendance-syste-36412.firebasestorage.app", messagingSenderId: "183007048528", appId: "1:183007048528:web:5bcade6da140f369013255", measurementId: "G-RXGBW49ZB3" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -144,8 +165,6 @@
                         document.getElementById('referenceImage').src = userProfilePhotoURL;
                     }
                 }
-            } else {
-                window.location.href = "index.html";
             }
         });
 
@@ -270,17 +289,13 @@
             }
         }
 
-        document.getElementById('startScanBtn').addEventListener('click', () => verifyAndStartScan());
-        
-        document.getElementById('cyberLabStatus').addEventListener('click', function() {
-            if (this.classList.contains('pending')) {
-                verifyAndStartScan(this);
-            }
-        });
+        function stopCamera() {
+            const stream = document.getElementById('preview').srcObject;
+            if(stream) stream.getTracks().forEach(t => t.stop());
+            document.getElementById('cameraModal').style.display = 'none';
+        }
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = "index.html");
-        });
+        document.getElementById('closeCamBtn').onclick = stopCamera;
     </script>
 </body>
 </html>

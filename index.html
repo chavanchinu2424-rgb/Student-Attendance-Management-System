@@ -44,17 +44,31 @@
             </div>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
         const firebaseConfig = { apiKey: "AIzaSyBogJqcO9IifIIQrgS7iDQeYPF22XtXnEc", authDomain: "student-attendance-syste-36412.firebaseapp.com", projectId: "student-attendance-syste-36412", storageBucket: "student-attendance-syste-36412.firebasestorage.app", messagingSenderId: "183007048528", appId: "1:183007048528:web:5bcade6da140f369013255", measurementId: "G-RXGBW49ZB3" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
-                .then(() => window.location.href = "Dashboard.html")
-                .catch((err) => alert("Login Failed: " + err.message));
+            const emailValue = document.getElementById('email').value.trim().toLowerCase();
+            const passValue = document.getElementById('password').value.trim();
+
+            if (emailValue === "chavanchinu2424@gmail.com" && passValue === "chinu@123") {
+                // Key: adminAccessCode (must match Admin Page exactly)
+                sessionStorage.setItem('adminAccessCode', 'ADYPU_ADMIN_2025');
+                console.log("Admin verified. Redirecting...");
+                window.location.href = "Admin Page.html"; 
+                return;
+            }
+
+            signInWithEmailAndPassword(auth, emailValue, passValue)
+                .then(() => { window.location.href = "Dashboard.html"; })
+                .catch((err) => { alert("Login Failed: " + err.message); });
         });
     </script>
 </body>
